@@ -2,7 +2,7 @@ const config = require('../config');
 const logging = require("../logging/logging");
 const log = logging.createLogger("validate");
 const validater = require('email-validator');
-const maria = require('../db/users');
+const maria = require('../db/mariaDB/users');
 const bycrypt = require('bcrypt');
 const saltRounds = 10;
 
