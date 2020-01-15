@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const schema = mongoose.Schema;
-export const realSchema = new schema ({
-    carbonIntensity: {
+exports.realSchema = new schema ({
+    intensity: {
         type: Number,
         required: true,
     },
@@ -9,18 +9,18 @@ export const realSchema = new schema ({
         type: Date,
         required: true,
     },
-    levels: {
+    index: {
         type: String,
         required: true,
     },
-    main_source: {
-        type: String,
+    fuel_source: {
+        type: Array,
         required: true
     }
 }, {collection: 'real'});
 
-export const forecastSchema = new schema ({
-    carbonIntensity: {
+exports.forecastSchema = new schema ({
+    intensity: {
         type: Number,
         required: true,
     },
@@ -28,12 +28,12 @@ export const forecastSchema = new schema ({
         type: Date,
         required: true,
     },
-    levels: {
+    index: {
         type: String,
         required: true,
     },
-    main_source: {
-        type: String,
+    fuel_source: {
+        type: Array,
         required: true
     }
 

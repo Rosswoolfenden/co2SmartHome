@@ -2,6 +2,7 @@ const config = require('../config');
 const logger = require("../logging/logging");
 const log = logger.createLogger('Carbon');
 const request = require('request-promise');
+const mongo = require('../db/mongo/mongoSave');
 let url = config.apiURL;
 //  Multi use api call function
 async function fetch(url) {
@@ -11,9 +12,9 @@ async function fetch(url) {
         });
         const data = JSON.parse(response);
         return data;
-    } catch (err) {
-        log.error(JSON.stringify(err));
-        throw err;
+    } catch (e) {
+        log.error(JSON.stringify(e));
+        throw e;
     }
 }
 
@@ -26,9 +27,12 @@ async function fetch(url) {
 
 exports.addCarbonData = async() => {
     try {
-        carbonData = await getCarbonData();
-        mix =  await getGenerationMix();
-        return mix;
+        let carbonData = await getCarbonData();
+        const genMix =  await getGenerationMix();
+        carbonData.fuel_source = genMix;
+        const saved = await mongo.save('actual', carbonData);
+        console.log(saved);
+        return saved;
     } catch (e) {
         log.error(JSON.stringify(e));
     }
@@ -68,9 +72,9 @@ async function getGenerationMix() {
         const url = config.apiURL + 'generation';
         // url = 'https://api.carbonintensity.org.uk/generation'
         console.log(url);
-        const data = await fetch(url);
+        const mix = await fetch(url);
         // console.log(data);
-        return data;
+        return mix.data.generationmix ;
     } catch (e) {
         throw e
     }
