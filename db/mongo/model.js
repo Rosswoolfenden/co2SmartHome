@@ -13,7 +13,11 @@ exports.realSchema = new schema ({
         type: String,
         required: true,
     },
-    fuel_source: {
+    generation: {
+        type: Array,
+        required: true
+    },
+    factors: {
         type: Array,
         required: true
     }

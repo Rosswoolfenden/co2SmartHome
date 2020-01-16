@@ -2,8 +2,12 @@ const config = require('../config');
 const logger = require("../logging/logging");
 const log = logger.createLogger('Carbon');
 const request = require('request-promise');
+const mongoose = require('mongoose');
 const mongo = require('../db/mongo/mongoSave');
-let url = config.apiURL;
+const model = require('../db/mongo/model');
+const actual = mongoose.model('actual', model.realSchema);
+const forecast = mongoose.model('forecast', model.forecastSchema);
+
 //  Multi use api call function
 async function fetch(url) {
     try {
@@ -18,19 +22,17 @@ async function fetch(url) {
     }
 }
 
-// carbon = {
-//     datetime: startTS,
-//     intensity: int,
-//     level: string,
-//     mainContributer: string
-// }
-
 exports.addCarbonData = async() => {
     try {
         let carbonData = await getCarbonData();
-        const genMix =  await getGenerationMix();
-        carbonData.fuel_source = genMix;
-        const saved = await mongo.save('actual', carbonData);
+        const fuelData = await getFuelData();
+        carbonData.generation = fuelData.generation;
+        carbonData.factors = fuelData.factors;
+
+        const valid  = await validate(carbonData);
+        return valid;
+        // const schema = new actual(carbonData);
+        // const saved = await mongo.save(schema, carbonData);
         console.log(saved);
         return saved;
     } catch (e) {
@@ -56,26 +58,43 @@ async function getCarbonData () {
     }
 }
 
-async function getFuelType () {
+// Gets fuel data, Factors, and generation mix
+async function getFuelData () {
     try {
-        const url = config.apiURL + 'intensity/factors'
-        console.log(url)
-        // const data = await fetch(url);
-        return data;
+        const genMixURL = config.apiURL + 'generation'
+        const factorsURL = config.apiURL + 'intensity/factors'
+        const factors = await fetch(factorsURL);
+        const genMix = await fetch(genMixURL);
+        const fuelData = {
+            factors: factors.data,
+            generation: genMix.data.generationmix
+        }
+        return fuelData;
     } catch (e) {
         throw e;
     }
 }
-// Gets the feuls used to generate the energy at the time 
-async function getGenerationMix() {
-    try {
-        const url = config.apiURL + 'generation';
-        // url = 'https://api.carbonintensity.org.uk/generation'
-        console.log(url);
-        const mix = await fetch(url);
-        // console.log(data);
-        return mix.data.generationmix ;
-    } catch (e) {
-        throw e
-    }
+
+async function validate(carbonData) {
+
+    // Have to wrap the promise as the mongoose lub
+    return new Promise(async function (resolve) {
+       
+        const filter = {'datetime': carbonData.datetime};
+        if (!carbonData.datetime || !carbonData.intensity || !carbonData.factors || carbonData.generation || carbonData.index) {
+            log.error('undesfined data in fetch ');
+            resolve(false);
+        } else {
+            actual.countDocuments(filter, function (err, count) {
+                if (count > 0) {
+                    log.error('File already exists in Actual collection');
+                    resolve(false);
+                } else {
+                    log.debug('Data has been validated');
+                    resolve(true);
+                }
+            });
+        }
+    });
 }
+
