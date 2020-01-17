@@ -7,8 +7,7 @@ const mongo = require('../db/mongo/mongoSave');
 const model = require('../db/mongo/model');
 const actual = mongoose.model('actual', model.realSchema);
 //  Multi use api call function
-async function fetch(url) {
-    console.log('THE URL US: ' + url)
+exports.fetch = async(url) => {
     try {
         const response = await request.get({
             url: url,
@@ -49,7 +48,7 @@ exports.addCarbonData = async() => {
 async function getCarbonData () {
     try {
         const url = config.apiURL + 'intensity'; 
-        const carbon = await fetch(url);
+        const carbon = await exports.fetch(url);
         const data = Object.values(carbon)[0][0];
         const carbondata = {
             datetime: data.from,
@@ -68,8 +67,8 @@ async function getFuelData () {
     try {
         const genMixURL = config.apiURL + 'generation'
         const factorsURL = config.apiURL + 'intensity/factors'
-        const factors = await fetch(factorsURL);
-        const genMix = await fetch(genMixURL);
+        const factors = await exports.fetch(factorsURL);
+        const genMix = await exports.fetch(genMixURL);
         const fuelData = {
             factors: factors.data,
             generation: genMix.data.generationmix

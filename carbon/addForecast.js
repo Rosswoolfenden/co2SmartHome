@@ -13,7 +13,8 @@ exports.addForecast = async () => {
     try {
         log.info('Getting Forecast data');
         const forecast = await getForecast();
-        return forecast;
+        const formattedForecast = format(forecast);
+        return formattedForecast;
     } catch (e) {
         log.error(JSON.stringify(e));
         throw e;
@@ -23,7 +24,7 @@ exports.addForecast = async () => {
 async function getForecast() {
     try {
         const now =  moment().format('YYYY-MM-DDThh:mmZ');
-        console.log(now);
+        
         const url = config.apiURL + 'intensity/' + now + '/fw24h';
         // Uses fetch function in addLatest to avoid reuse of code
         
@@ -33,4 +34,18 @@ async function getForecast() {
         log.error(JSON.stringify(e));
         throw e;
     }
+}
+
+async function format(carbon) {
+    data = carbon.data
+    const forecastArray = []
+    data.forEach(entry => {
+        const newEntry = {
+            datetime: entry.from,
+            intensity: entry.intensity.forecast,
+            index: entry.intensity.index
+        }
+        forecastArray.push(newEntry);
+    });
+    return forecastArray;
 }

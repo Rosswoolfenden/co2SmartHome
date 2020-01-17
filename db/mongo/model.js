@@ -35,10 +35,5 @@ exports.forecastSchema = new schema ({
     index: {
         type: String,
         required: true,
-    },
-    fuel_source: {
-        type: Array,
-        required: true
     }
-
 }, {collection: 'forecast'});
