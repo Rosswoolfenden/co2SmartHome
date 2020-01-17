@@ -8,7 +8,7 @@ const app = express();
 const cabronRoutes = require('./routes/carbonRoutes');
 const authRoutes = require('./routes/authRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
-const carbon = require('./carbon/addCarbon');
+const carbon = require('./carbon/addLatest');
 const port = config.port;
 app.use(bodyParser.json());
 
@@ -24,7 +24,7 @@ const connectWithRetry = function () {
 };
 connectWithRetry();
 
-
+// todo Add functions to call to add the carbondata
 
 // carbon.getCarbonData();
 app.use('/carbon', cabronRoutes);
