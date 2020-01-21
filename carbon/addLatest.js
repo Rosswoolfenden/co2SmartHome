@@ -3,9 +3,9 @@ const logger = require("../logging/logging");
 const log = logger.createLogger('Carbon');
 const request = require('request-promise');
 const mongoose = require('mongoose');
-const mongo = require('../db/mongo/mongoSave');
+const mongo = require('../db/mongo/mongoConnect');
 const model = require('../db/mongo/model');
-const actual = mongoose.model('actual', model.realSchema);
+const real = mongoose.model('real', model.realSchema);
 //  Multi use api call function
 exports.fetch = async(url) => {
     try {
@@ -15,8 +15,6 @@ exports.fetch = async(url) => {
         const data = JSON.parse(response);
         return data;
     } catch (e) {
-
-        console.log("this failed")
         log.error(JSON.stringify(e));
         throw e;
     }
@@ -31,7 +29,7 @@ exports.addCarbonData = async() => {
 
         const valid  = await validate(carbonData);
         if (valid) {
-            const schema = new actual(carbonData);
+            const schema = new real(carbonData);
             const saved = await mongo.save(schema, carbonData);
             return saved;
         } else {
@@ -80,13 +78,14 @@ async function getFuelData () {
 }
 
 
+
 async function validate(carbonData) {
     log.info('Validating the carbon data')
     // Have to wrap the promise as the mongoose does not work sync
     // todo - More validation
     return new Promise(async function (resolve) {
         const filter = {'datetime': carbonData.datetime};
-            actual.countDocuments(filter, function (err, count) {
+            real.countDocuments(filter, function (err, count) {
                 if (count > 0) {
                     log.error('File already exists in Actual collection');
                     resolve(false);

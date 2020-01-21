@@ -4,21 +4,33 @@ const config = require('../config');
 const logging = require("../logging/logging");
 const log = logging.createLogger("router");
 const latest = require('../carbon/addLatest');
-const forecast = require('../carbon/addForecast')
+const forecast = require('../carbon/addForecast');
+const carbon = require('../carbon/getCarbon');
 // router.get('/carbon', async (req, res) => { 
     
 // });
 
 // Endpoint to colelct carbon data
-router.get('/', async (req, res) => {
+router.get('/range', async (req, res) => {
     try {
-        const carbon = await latest.addCarbonData();
-        res.send(carbon);
+        const from = req.query.from;
+        const to = req.query.to;
+        const data = await carbon.getCarbonRange(from, to);
+        res.send(data);
     } catch (e) {
-        res.send("This does not work")
+        log.error('Unable to get carbon range');
+        res.send({Error: 'Unable to get carbon range, try again later'});
     }
 });
 
+router.get('/current', async (req, res) => {
+    try {
+
+    } catch (e) {
+        log.error('Unable to get current carbon data');
+        res.send({Error: 'Unable to get current carbon data, try again later'});
+    }
+})
 // Endpoint to add carbon data from the database
 router.post('/carbon', async (req, res) => {
     try {
