@@ -8,23 +8,25 @@ const saltRounds = 10;
 
 
 exports.register = async (details) => {
-    const email = details.email;
-    const password = details.password;
+    let email = details.email;
+    let password = details.password;
+    let name = details.fullname;
     try {
-        const valid = await validate(email, password);
+        let valid = await validate(email, password);
         if (!valid) {
             return ({Error: "invaid email adress or password"});
         }
-        const count = await checkUserExsits(email);
+        let count = await checkUserExsits(email);
         if (!count) {
             return ({Error: 'Email already exists in database'});
         }
-        const salt = bycrypt.genSaltSync(saltRounds);
+        let salt = bycrypt.genSaltSync(saltRounds);
         password = bycrypt.hashSync(password, salt)
         
         return addUser(email, password);
 
     } catch (e) {
+        console.log("the error is " + e);
         return {Error: "Unable to complete at this time"}
     }
 } 
