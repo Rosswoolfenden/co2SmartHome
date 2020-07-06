@@ -6,10 +6,12 @@ const log = logging.createLogger("router");
 const auth = require('../auth/auth');
 router.post('/register', async (req, res) => {
     const body = req.body;
+    console.log("this occured");
     try {
         const valid = await auth.register(body);
         res.send(valid);
     } catch(e) {
+        console.log("This failed" + e);
         res.send('Unable to complete at this time, please try again later.');
     }
 

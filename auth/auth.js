@@ -2,29 +2,31 @@ const config = require('../config');
 const logging = require("../logging/logging");
 const log = logging.createLogger("validate");
 const validater = require('email-validator');
-const maria = require('../db/users');
+const maria = require('../db/mariaDB/mysqlConnect');
 const bycrypt = require('bcrypt');
 const saltRounds = 10;
 
 
 exports.register = async (details) => {
-    const email = details.email;
+    let email = details.email;
     let password = details.password;
+    let name = details.fullname;
     try {
-        const valid = await validate(email, password);
+        let valid = await validate(email, password);
         if (!valid) {
             return ({Error: "invaid email adress or password"});
         }
-        const count = await checkUserExsits(email);
+        let count = await checkUserExsits(email);
         if (!count) {
             return ({Error: 'Email already exists in database'});
         }
-        const salt = bycrypt.genSaltSync(saltRounds);
+        let salt = bycrypt.genSaltSync(saltRounds);
         password = bycrypt.hashSync(password, salt)
         
         return addUser(email, password);
 
     } catch (e) {
+        console.log("the error is " + e);
         return {Error: "Unable to complete at this time"}
     }
 } 
@@ -61,7 +63,7 @@ async function validate (email, password) {
 }
 
 exports.login = async (details) => {
-    const email = details.email;
+    const email = destartails.email;
     const password =  details.password;
     try {
         const exists = await checkUserExsits(email);
@@ -74,6 +76,7 @@ exports.login = async (details) => {
         if( bycrypt.compareSync(password, hashPassword)) {
             return ({success: `Succesfully logged on`, user: user[0].ID});
         } else {
+            
             return ({Error: 'Passwords do not match'});
         }
     } catch (e) { 
