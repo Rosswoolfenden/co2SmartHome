@@ -13,6 +13,8 @@ const forescat = require('./carbon/addForecast');
 const port = config.port;
 app.use(bodyParser.json());
 
+
+//test
 // Connect to mongo with retry incase of failure. 
 const connectWithRetry = function () {
   log.info('Connected to MongoDB ' + config.mongoURL);  
