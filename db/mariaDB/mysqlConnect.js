@@ -1,14 +1,10 @@
 const config = require('../../config');
 const logger = require("../../logging/logging");
-const mariadb = require ('mariadb')
+const mariadb = require ('mariadb');
+const mariaPool = require('../mariaDB/mariaPool');
 const log = logger.createLogger('SQL connector');
-const pool = mariadb.createPool({
-  host: "172.17.0.2",
-  user: "ross",
-  password: "qwerty",
-  database: "smart_home",
-  connectionLimit: 5
-});
+
+const pool = mariaPool;
 // FOR LOCAL RUNNING
 
   exports.sqlQuery =  async (q, params) => {

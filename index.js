@@ -10,6 +10,9 @@ const authRoutes = require('./routes/authRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
 const carbon = require('./carbon/addLatest');
 const forescat = require('./carbon/addForecast');
+
+const dbpool  = require('./db/mariaDB/mariaPool');
+const pool = dbpool.pool; 
 const port = config.port;
 app.use(bodyParser.json());
 
@@ -28,9 +31,33 @@ const connectWithRetry = function () {
   });
 };
 
+async function sqlConnect() { 
+  let conn
+  try {
+    conn = await pool.getConnection();
+    const rows = await conn.query("SELECT 1 as val");
+    log.info(JSON.stringify(rows));
+
+  } catch (err) {
+      log.error(err);
+      log.error("Failed to connect to sql databse");
+  } finally {
+    if (conn){
+      log.info("connected to sql databse");
+      conn.end();
+      return;
+    } 
+  }
+}
+
+sqlConnect();
+
+// connect to maria db.
+
 // uncomment to connect to mongo 
 connectWithRetry();
-
+carbon.addCarbonData();
+forescat.addForecast();
 setInterval(function() {
     log.info('calling for real data ');
     carbon.addCarbonData();
