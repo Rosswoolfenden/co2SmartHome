@@ -17,33 +17,28 @@ app.use(bodyParser.json());
 //test
 // Connect to mongo with retry incase of failure. 
 const connectWithRetry = function () {
-  log.info('Connected to MongoDB ' + config.mongoURL);  
-  return mongoose.connect(config.mongoURL, { useNewUrlParser: true, useUnifiedTopology: true}, function(err) {
+  log.info('trying to connect to  MongoDB ' + config.mongoURL);  
+  return mongoose.connect('mongodb://localhost:27017/carbon', function(err) {
     if (err) {
-      log.error('Failed to connect to co2 db, trying again in 10 seconds');
+      log.error('Failed to connect to co2 db, trying again in 10 seconds ' + err);
       setTimeout(connectWithRetry, 10000);
+    } else {
+      log.info("succesfully connected to mongodb for carbon data");
     }
   });
 };
+
+// uncomment to connect to mongo 
 connectWithRetry();
 
-// todo Add functions to call to add the carbondata
-
 setInterval(function() {
-  //const zones = config.zones;
-  //zones.forEach(zone => {
     log.info('calling for real data ');
-    //const auto = true;
-    //addForecast(zone);
     carbon.addCarbonData();
-
-  //});
 }, 1800000/2);
 
 setInterval(function() {
   log.info("Calling for forecasted data")
   forescat.addForecast();
-  
 }, 1800000/2);
 
 

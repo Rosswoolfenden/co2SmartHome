@@ -1,6 +1,6 @@
 module.exports = {
     port: 9999,
-    mongoURL: 'mongodb://localhost/co2',
+    mongoURL: 'mongodb://localhost:27017/carbon',
     apiURL: 'https://api.carbonintensity.org.uk/',
     mariadb: {
         client: 'mysql',
