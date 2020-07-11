@@ -4,15 +4,13 @@ module.exports = {
     apiURL: 'https://api.carbonintensity.org.uk/',
     mariadb: {
         client: 'mysql',
-        pool: {
-          host: config.mariadb.pool,
-          user: "smart_home",
-          port: "3306",
-          password: "qwerty",
-          database: "smart_home",
-          connectionLimit: 5
+        connection: {
+          host: 'localhost',
+          port: '3306',
+          user: 'ross',
+          password: 'qwerty',
+          database: 'smart_home'
         },
-    
         pool: { min: 0, max: 5 }
       },
 }                 
