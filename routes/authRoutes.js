@@ -4,9 +4,10 @@ const config = require('../config');
 const logging = require("../logging/logging");
 const log = logging.createLogger("router");
 const auth = require('../auth/auth');
+
 router.post('/register', async (req, res) => {
     const body = req.body;
-    console.log("this occured");
+    console.log("this occured "+ body.email);
     try {
         const valid = await auth.register(body);
         res.send(valid);

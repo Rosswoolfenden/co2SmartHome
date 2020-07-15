@@ -51,6 +51,8 @@ async function checkUserExsits (email) {
 }
 
 async function validate (email, password) {
+     log.info("the email is " + email);
+     log.info("the password is " + password);
     if (!validater.validate(email)) {
         log.error('Invalid email adress');
         return false;
@@ -63,7 +65,7 @@ async function validate (email, password) {
 }
 
 exports.login = async (details) => {
-    const email = destartails.email;
+    const email = details.email;
     const password =  details.password;
     try {
         const exists = await checkUserExsits(email);

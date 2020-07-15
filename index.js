@@ -5,6 +5,7 @@ const config = require('./config');
 const logging = require("./logging/logging");
 const log = logging.createLogger("server");
 const app = express();
+// routes 
 const cabronRoutes = require('./routes/carbonRoutes');
 const authRoutes = require('./routes/authRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
@@ -12,6 +13,7 @@ const carbon = require('./carbon/addLatest');
 const forescat = require('./carbon/addForecast');
 
 const dbpool  = require('./db/mariaDB/mariaPool');
+
 const pool = dbpool.pool; 
 const port = config.port;
 app.use(bodyParser.json());
@@ -56,8 +58,6 @@ sqlConnect();
 
 // uncomment to connect to mongo 
 connectWithRetry();
-carbon.addCarbonData();
-forescat.addForecast();
 setInterval(function() {
     log.info('calling for real data ');
     carbon.addCarbonData();
