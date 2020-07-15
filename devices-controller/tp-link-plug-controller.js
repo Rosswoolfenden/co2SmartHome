@@ -2,8 +2,8 @@ const { Client } = require('tplink-smarthome-api');
 const logging = require("../logging/logging");
 const log = logging.createLogger("smart plug connector");
 const interfaces = require('os').networkInterfaces();
-const { start } = require('repl');
 
+const client  =  new Client();
 let plugs = [];
 
 
@@ -27,14 +27,36 @@ Object.keys(interfaces)
 
 
 function registerPlug(plug) {
+    console.log(plug.deviceId);
     plugs.push(plug);
-    log.info("found plug");
+    log.info("found plug", plug);
 }
 
-module.exports.getDevice = function(deviceId) {
+exports.getDevice = function(deviceId) {
   return plugs.find(d => d.deviceId == deviceId);
 }
 
-module.exports.getAllDevices = function() {
+exports.getAllDevices = function() {
   return plugs;
 }
+
+exports.turnAllPlugsOn = function () {
+    log.info("turning on all plug now " + plugs.length);
+    const plug = plugs[0];
+    log.info("trying");
+    try {
+        plug.setPowerState(true);
+    } catch (err) {
+        log.error("Error: Failed to do this cos  -- "+ err);
+    } 
+}
+exports.turnAllPlugsOff = function() {
+    log.info("turning light off");
+    const plug = plugs[0];
+    try {
+        plug.setPowerState(false);
+    } catch (err) {
+        log.error("Failed to do this ");
+    }
+}
+ 

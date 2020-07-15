@@ -3,15 +3,17 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const config = require('./config');
 const logging = require("./logging/logging");
+//const http=require(('http').server(express));
 const log = logging.createLogger("server");
 const app = express();
+
 // routes 
 const cabronRoutes = require('./routes/carbonRoutes');
 const authRoutes = require('./routes/authRoutes');
 const deviceRoutes = require('./routes/deviceRoutes');
 const carbon = require('./carbon/addLatest');
 const forescat = require('./carbon/addForecast');
-
+const tplinkplug = require('./devices-controller/tp-link-plug-controller');
 const dbpool  = require('./db/mariaDB/mariaPool');
 
 const pool = dbpool.pool; 
@@ -68,10 +70,20 @@ setInterval(function() {
   forescat.addForecast();
 }, 1800000/2);
 
+plugs = tplinkplug.getAllDevices();
+
+
+// log.info(plug1);
+// function turnplug() {
+//   log.info("turning plug son now ");
+//   tplinkplug.turnAllPlugsOn();
+// }
+
+// turnplug();
 
 // carbon.getCarbonData();
 app.use('/carbon', cabronRoutes);
 app.use('/auth', authRoutes);
 app.use('/device', deviceRoutes);
-
-app.listen(port, () => console.log(`Carbon smart home is running on port ${port}!`));
+const ipdress = '192.168.1.89';
+app.listen(port, ipdress, () => console.log(`Carbon smart home is running on port ${port}!`));
