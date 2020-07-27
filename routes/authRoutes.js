@@ -19,9 +19,11 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+    
     const body = req.body;
     try {
         login  = await auth.login(body);
+        
         res.send(login);
     } catch (e) {
         res.send('Unable to login at this time, please try again later');

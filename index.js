@@ -62,12 +62,22 @@ sqlConnect();
 connectWithRetry();
 setInterval(function() {
     log.info('calling for real data ');
-    carbon.addCarbonData();
+    try {
+      carbon.addCarbonData();
+    } catch (e) {
+      log.error("Failed to get carbon data " + e); 
+    }
+    
 }, 1800000/2);
 
 setInterval(function() {
-  log.info("Calling for forecasted data")
-  forescat.addForecast();
+  log.info("Calling for forecasted data");
+  try {
+    forescat.addForecast();
+  } catch (e) {
+    log.error("Faild to collect forecast data " + e);
+  }
+  
 }, 1800000/2);
 
 plugs = tplinkplug.getAllDevices();
@@ -85,5 +95,5 @@ plugs = tplinkplug.getAllDevices();
 app.use('/carbon', cabronRoutes);
 app.use('/auth', authRoutes);
 app.use('/device', deviceRoutes);
-const ipdress = '192.168.1.89';
+const ipdress = '192.168.1.86';
 app.listen(port, ipdress, () => console.log(`Carbon smart home is running on port ${port}!`));

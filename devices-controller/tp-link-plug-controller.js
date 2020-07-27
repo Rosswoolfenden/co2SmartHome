@@ -25,7 +25,7 @@ Object.keys(interfaces)
   .map((iface) => iface.address)
   .map(startDiscovery);
 
-
+// todo save plugs to db
 function registerPlug(plug) {
     console.log(plug.deviceId);
     plugs.push(plug);
@@ -37,19 +37,27 @@ exports.getDevice = function(deviceId) {
 }
 
 exports.getAllDevices = function() {
-  return plugs;
+  console.log(plugs[0]);
+  return plugs[0];
 }
 
-exports.turnAllPlugsOn = function () {
+exports.turnAllPlugsOn = function (plugud) {
+
     log.info("turning on all plug now " + plugs.length);
     const plug = plugs[0];
     log.info("trying");
     try {
         plug.setPowerState(true);
+
+        // todo return plug name 
+        return ({Success: "Turned on inser"})
     } catch (err) {
         log.error("Error: Failed to do this cos  -- "+ err);
+        return ({Error: "Failed to turn on #insert name#"})
     } 
 }
+
+// todo - sort out the repsonse 
 exports.turnAllPlugsOff = function() {
     log.info("turning light off");
     const plug = plugs[0];

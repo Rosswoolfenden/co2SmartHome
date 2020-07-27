@@ -76,6 +76,7 @@ exports.login = async (details) => {
         const user = await maria.sqlQuery(`SELECT * FROM users WHERE email = ?`, [email]);
         const hashPassword = user[0].password;
         if( bycrypt.compareSync(password, hashPassword)) {
+            log.info("log in successful");
             return ({success: `Succesfully logged on`, user: user[0].ID});
         } else {
             
